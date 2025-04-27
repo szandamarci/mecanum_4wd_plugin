@@ -183,6 +183,9 @@
  
    /// Linear velocity in X received on command (m/s).
    double target_x_{0.0};
+
+   /// Linear velocity in X received on command (m/s).
+   double target_y_{0.0};
  
    /// Angular velocity in Z received on command (rad/s).
    double target_rot_{0.0};
@@ -576,6 +579,7 @@
    std::lock_guard<std::mutex> scoped_lock(lock_);
  
    double vr = target_x_;
+   double vy = target_y_;
    double va = target_rot_;
  
    for (unsigned int i = 0; i < num_wheel_pairs_; ++i) {
@@ -588,6 +592,7 @@
  {
    std::lock_guard<std::mutex> scoped_lock(lock_);
    target_x_ = _msg->linear.x;
+   target_y_ = _msg->linear.y;
    target_rot_ = _msg->angular.z;
  }
  
