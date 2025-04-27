@@ -104,6 +104,9 @@
  
      /// Left wheel
      LEFT = 1,
+
+     REAR_RIGHT = 2,
+     REAR_LEFT = 3
    };
  
    /// Callback to be called at every simulation iteration.
@@ -244,7 +247,7 @@
    const gazebo_ros::QoS & qos = impl_->ros_node_->get_qos();
  
    // Get number of wheel pairs in the model
-   impl_->num_wheel_pairs_ = static_cast<unsigned int>(_sdf->Get<int>("num_wheel_pairs", 1).first);
+   impl_->num_wheel_pairs_ = static_cast<unsigned int>(_sdf->Get<int>("num_wheel_pairs", 2).first);
  
    if (impl_->num_wheel_pairs_ < 1) {
      impl_->num_wheel_pairs_ = 1;
@@ -324,18 +327,20 @@
      rear_right_joints.push_back(rear_right_joint);
    }
  
-   if (front_left_joints.size() != front_right_joints.size() || front_left_joints.size() != impl_->num_wheel_pairs_) {
-     RCLCPP_ERROR(
-       impl_->ros_node_->get_logger(),
-       "Inconsistent number of joints specified. Plugin will not work.");
-     impl_->ros_node_.reset();
-     return;
-   }
+  //  if (front_left_joints.size() != front_right_joints.size() || front_left_joints.size() != impl_->num_wheel_pairs_) {
+  //    RCLCPP_ERROR(
+  //      impl_->ros_node_->get_logger(),
+  //      "Inconsistent number of joints specified. Plugin will not work.");
+  //    impl_->ros_node_.reset();
+  //    return;
+  //  }
  
    unsigned int index;
-   for (index = 0; index < impl_->num_wheel_pairs_; ++index) {
-     impl_->joints_.push_back(front_right_joints[index]);
-     impl_->joints_.push_back(front_left_joints[index]);
+   for (index = 0; index < 2; ++index) {
+     impl_->joints_.push_back(front_right_joints[0]);
+     impl_->joints_.push_back(front_left_joints[0]); 
+     impl_->joints_.push_back(rear_right_joints[0]);
+     impl_->joints_.push_back(rear_left_joints[0]);
    }
  
    index = 0;
