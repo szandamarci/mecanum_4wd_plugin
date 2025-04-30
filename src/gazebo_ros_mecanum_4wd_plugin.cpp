@@ -339,13 +339,12 @@
   //  }
  
    unsigned int index;
-   for (index = 0; index < 2; ++index) {
-     impl_->joints_.push_back(front_right_joints[0]);
-     impl_->joints_.push_back(front_left_joints[0]); 
-     impl_->joints_.push_back(rear_right_joints[0]);
-     impl_->joints_.push_back(rear_left_joints[0]);
-   }
- 
+   
+   impl_->joints_.push_back(front_right_joints[0]);
+   impl_->joints_.push_back(front_left_joints[0]); 
+   impl_->joints_.push_back(rear_right_joints[0]);
+   impl_->joints_.push_back(rear_left_joints[0]);
+   
    index = 0;
    impl_->wheel_separation_.assign(impl_->num_wheel_pairs_, 0.34);
    for (auto wheel_separation = _sdf->GetElement("wheel_separation"); wheel_separation != nullptr;
@@ -468,6 +467,7 @@
    impl_->pose_encoder_.y = 0;
    impl_->pose_encoder_.theta = 0;
    impl_->target_x_ = 0;
+   impl_->target_y_ = 0;
    impl_->target_rot_ = 0;
  }
  
@@ -581,11 +581,15 @@
    double vr = target_x_;
    double vy = target_y_;
    double va = target_rot_;
+   
  
-   for (unsigned int i = 0; i < num_wheel_pairs_; ++i) {
-     desired_wheel_speed_[2 * i + LEFT] = vr - va * wheel_separation_[i] / 2.0;
-     desired_wheel_speed_[2 * i + RIGHT] = vr + va * wheel_separation_[i] / 2.0;
-   }
+   desired_wheel_speed_[RIGHT] = (vr + vy + (0.02+0.035)*va) / 0.10;
+   desired_wheel_speed_[LEFT] = (vr - vy - (0.02+0.035)*va) / 0.10;
+   desired_wheel_speed_[REAR_RIGHT] = (vr - vy + (0.02+0.035)*va) / 0.10;
+   desired_wheel_speed_[REAR_LEFT] = (vr + vy - (0.02+0.035)*va) / 0.10;
+   
+     //ezt kell átírni
+   
  }
  
  void GazeboRosDiffDrivePrivate::OnCmdVel(const geometry_msgs::msg::Twist::SharedPtr _msg)
