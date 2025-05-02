@@ -189,6 +189,10 @@
  
    /// Angular velocity in Z received on command (rad/s).
    double target_rot_{0.0};
+
+
+   //Ez is új
+   double target_vy_{0.0};
  
    /// Update period in seconds.
    double update_period_;
@@ -597,6 +601,7 @@
    std::lock_guard<std::mutex> scoped_lock(lock_);
    target_x_ = _msg->linear.x;
    target_y_ = _msg->linear.y;
+   target_vy_ = _msg->linear.y;
    target_rot_ = _msg->angular.z;
  }
  
@@ -604,6 +609,8 @@
  {
    double vl = joints_[LEFT]->GetVelocity(0);
    double vr = joints_[RIGHT]->GetVelocity(0);
+   double vrr = joints_[REAR_RIGHT]->GetVelocity(0);
+   double vrl = joints_[REAR_LEFT]->GetVelocity(0);
  
    double seconds_since_last_update = (_current_time - last_encoder_update_).Double();
    last_encoder_update_ = _current_time;
@@ -613,6 +620,11 @@
    // Book: Sigwart 2011 Autonompus Mobile Robots page:337
    double sl = vl * (wheel_diameter_[0] / 2.0) * seconds_since_last_update;
    double sr = vr * (wheel_diameter_[0] / 2.0) * seconds_since_last_update;
+
+   //Ez új
+   double sy = target_vy_ * seconds_since_last_update;
+
+
    double ssum = sl + sr;
  
    double sdiff = sr - sl;
